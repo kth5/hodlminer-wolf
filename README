@@ -9,6 +9,7 @@ Git tree:   https://github.com/pooler/cpuminer
 Additional contributions were made by:
 - Optiminer
 - Fuzzbawls
+- nicehash
 
 Dependencies:
 	libcurl			http://curl.haxx.se/libcurl/
