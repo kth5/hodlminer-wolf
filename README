@@ -1,15 +1,15 @@
-This is a multi-threaded CPU miner for Litecoin and Bitcoin,
+This is a multi-threaded CPU miner for HODL algorithm,
 fork of Jeff Garzik's reference cpuminer.
 
 License: GPLv2.  See COPYING for details.
 
-Downloads:  https://sourceforge.net/projects/cpuminer/files/
-Git tree:   https://github.com/pooler/cpuminer
+Git tree:   https://github.com/ghobson2013/hodlminer-wolf
 
 Additional contributions were made by:
 - Optiminer
 - Fuzzbawls
 - nicehash
+- pooler
 
 Dependencies:
 	libcurl			http://curl.haxx.se/libcurl/
@@ -19,8 +19,10 @@ Dependencies:
 Basic *nix build instructions:
 	./autogen.sh	# only needed if building from git repo
 	./nomacro.pl	# only needed if building on Mac OS X or with Clang
-	./configure CFLAGS="-O3"
+	./configure CFLAGS="-O3 -march=native"
 	make
+
+	Note: see install instructions for static building in ./install-static-instructions.txt
 
 Notes for AIX users:
 	* To build a 64-bit binary, export OBJECT_MODE=64
@@ -61,7 +63,7 @@ Architecture-specific notes:
 		can still be built, but unavailable optimizations are left off.
 		The miner uses the VIA Padlock Hash Engine where available.
 
-Usage instructions:  Run "minerd --help" to see options.
+Usage instructions:  Run "hodlminer --help" to see options.
 
 Connecting through a proxy:  Use the --proxy option.
 To use a SOCKS proxy, add a socks4:// or socks5:// prefix to the proxy host.
@@ -70,7 +72,3 @@ available since libcurl 7.18.0.
 If no protocol is specified, the proxy is assumed to be a HTTP proxy.
 When the --proxy option is not used, the program honors the http_proxy
 and all_proxy environment variables.
-
-Also many issues and FAQs are covered in the forum thread
-dedicated to this program,
-	https://bitcointalk.org/index.php?topic=55038.0
