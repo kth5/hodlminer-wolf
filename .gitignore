@@ -1,6 +1,6 @@
 
-minerd
-minerd.exe
+hodlminer
+hodlminer.exe
 *.o
 
 autom4te.cache
