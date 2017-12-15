@@ -11,7 +11,7 @@ EXTRA_DIST	= example-cfg.json nomacro.pl
 
 SUBDIRS		= compat
 
-AM_CFLAGS 	+= $(PTHREAD_FLAGS) -march=native -O3 -fuse-linker-plugin -std=gnu11 $(JANSSON_INCLUDES)
+AM_CFLAGS 	+= $(PTHREAD_FLAGS) -flto -fuse-linker-plugin -std=gnu11 $(JANSSON_INCLUDES)
 
 bin_PROGRAMS	= hodlminer
 

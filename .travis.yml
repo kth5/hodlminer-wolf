@@ -1,0 +1,30 @@
+language: c
+
+matrix:
+  include:
+    - os: osx
+      sudo: false
+      env: xCONFIG_FLAGS="--with-libcurl=/usr/local/opt/curl" xCFLAGS="-O3 -march=corei7-avx"
+      osx_image: xcode7.1
+      compiler: clang
+      file: 'hodlminer-wolf-mac.zip'
+
+    - os: linux
+      sudo: required
+      dist: trusty
+      env: xCONFIG_FLAGS="" xCFLAGS="-O3 -march=native"
+      compiler: gcc
+      file: 'hodlminer-wolf-linux.tar.gz'
+
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update          ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install curl    ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew link curl --force     ; fi
+
+install: true
+
+script:
+  - ./autogen.sh
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./nomacro.pl         ; fi
+  - ./configure CFLAGS="${xCFLAGS}" ${xCONFIG_FLAGS}
+  - make
