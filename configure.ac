@@ -1,10 +1,10 @@
-AC_INIT([cpuminer], [2.4.3])
+AC_INIT([hodlminer], [2.4.3])
 
 AC_PREREQ([2.59c])
 AC_CANONICAL_SYSTEM
-AC_CONFIG_SRCDIR([cpu-miner.c])
+AC_CONFIG_SRCDIR([hodl-miner.c])
 AM_INIT_AUTOMAKE([gnu subdir-objects])
-AC_CONFIG_HEADERS([cpuminer-config.h])
+AC_CONFIG_HEADERS([hodlminer-config.h])
 # AM_INIT_AUTOMAKE([subdir-objects])
 
 dnl Make sure anyone changing configure.ac/Makefile.am has a clue
