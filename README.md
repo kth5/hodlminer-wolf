@@ -6,10 +6,10 @@ License: GPLv2.  See COPYING for details.
 Git tree:   https://github.com/ghobson2013/hodlminer-wolf
 
 Additional contributions were made by:
-- Optiminer
-- Fuzzbawls
-- nicehash
-- pooler
+* Optiminer
+* Fuzzbawls
+* nicehash
+* pooler
 
 Dependencies:
 	libcurl			http://curl.haxx.se/libcurl/
@@ -17,11 +17,12 @@ Dependencies:
 		(jansson is included in-tree)
 
 Basic *nix build instructions:
+```
 	./autogen.sh	# only needed if building from git repo
 	./nomacro.pl	# only needed if building on Mac OS X or with Clang
 	./configure CFLAGS="-O3 -march=native"
 	make
-
+```
 	Note: see install instructions for static building in ./install-static-instructions.txt
 
 ### Windows build steps:
@@ -63,6 +64,7 @@ Run the following commands:
     - libwinpthread-1.dll
     - libz-1.dll
 
+```
 Architecture-specific notes:
 	ARM:	No runtime CPU detection. The miner can take advantage
 		of some instructions specific to ARMv5E and later processors,
@@ -84,8 +86,10 @@ Architecture-specific notes:
 		doesn't support some instruction sets. In that case, the miner
 		can still be built, but unavailable optimizations are left off.
 		The miner uses the VIA Padlock Hash Engine where available.
+```
 
 Usage instructions:  Run "hodlminer --help" to see options.
+
 
 Connecting through a proxy:  Use the --proxy option.
 To use a SOCKS proxy, add a socks4:// or socks5:// prefix to the proxy host.
