@@ -1224,7 +1224,7 @@ static void *miner_thread(void *userdata)
 
 		gettimeofday(&tv_mid, NULL);
 		timeval_subtract(&diff, &tv_mid, &tv_start);
-		printf("Time for GenRandomGarbage: %f\n", (diff.tv_sec + 1e-6 * diff.tv_usec));
+		//printf("Time for GenRandomGarbage: %f\n", (diff.tv_sec + 1e-6 * diff.tv_usec));
 
 		pthread_barrier_wait( &bar );
 		gettimeofday(&tv_mid, NULL);
@@ -1478,7 +1478,7 @@ out:
 
 static void show_version_and_exit(void)
 {
-	printf(PACKAGE_STRING "\n built on " __DATE__ "\n features:"
+	printf(PACKAGE_STRING "\n built by ghobson on " __DATE__ "\n features:"
 #if defined(USE_ASM) && defined(__i386__)
 		" i386"
 #endif
