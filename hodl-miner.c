@@ -104,6 +104,7 @@ int pthread_barrier_wait(pthread_barrier_t *barrier)
 #endif
 #include <jansson.h>
 #include <curl/curl.h>
+#include <openssl/rand.h>
 #include "compat.h"
 #include "miner.h"
 #include "hodl.h"
@@ -1208,10 +1209,14 @@ static void *miner_thread(void *userdata)
 		    }
 		    pthread_mutex_unlock(&g_work_lock);
 
-		    nNonce = (clock()+rand())%9999;
+		    if (likely(1 == RAND_bytes((unsigned char*)&nNonce, sizeof(nNonce)))) {
+			nNonce = nNonce % 9999;
+		    } else {
+		    	nNonce = (clock()+rand())%9999;
+		    }
 		}
-		
-		pthread_barrier_wait( &bar );		
+
+		pthread_barrier_wait( &bar );
 
 		if (memcmp(work.data, hodl_work.data, 76)) {
             work_free(&work);
