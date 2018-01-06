@@ -1339,7 +1339,8 @@ start:
 		}
 		if (likely(val)) {
 			bool rc;
-			applog(LOG_INFO, "LONGPOLL pushed new work");
+			applog(LOG_INFO, "LONGPOLL pushed new work for block %d, target %04X",
+                                                    g_work.height, g_work.target[7]);
 			res = json_object_get(val, "result");
 			soval = json_object_get(res, "submitold");
 			submit_old = soval ? json_is_true(soval) : false;
