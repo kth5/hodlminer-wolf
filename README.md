@@ -10,6 +10,7 @@ Additional contributions were made by:
 * Fuzzbawls
 * nicehash
 * pooler
+* TheTDD
 
 Dependencies:
 	libcurl			http://curl.haxx.se/libcurl/
