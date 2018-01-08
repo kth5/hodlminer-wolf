@@ -1,4 +1,4 @@
-.TH MINERD 1 "March 2016" "hodlminer 2.4.4"
+.TH MINERD 1 "Jan 2018" "hodlminer 2.4.5"
 .SH NAME
 hodlminer \- CPU miner for Hodl based coins
 .SH SYNOPSIS
@@ -9,6 +9,7 @@ hodlminer \- CPU miner for Hodl based coins
 is a multi-threaded CPU miner for Hodl based coins.
 It supports the getwork and getblocktemplate (BIP 22) methods,
 as well as the Stratum mining protocol.
+It also contains a fix for bip34 bug that only occurs at block height 32k-65k.
 .PP
 In its normal mode of operation, \fBhodlminer\fR connects to a mining server
 (specified with the \fB\-o\fR option), receives work from it and starts hashing.
