@@ -111,18 +111,47 @@ int pthread_barrier_wait(pthread_barrier_t *barrier)
 #define PROGRAM_NAME		"hodlminer"
 #define LP_SCANTIME		60
 
+bool opt_debug = false;
+
 #ifdef __linux /* Linux specific policy and affinity management */
 #include <sched.h>
-static inline void drop_policy(void)
+static inline void idle_policy(int id)
 {
 	struct sched_param param;
 	param.sched_priority = 0;
 
 #ifdef SCHED_IDLE
-	if (unlikely(sched_setscheduler(0, SCHED_IDLE, &param) == -1))
+	if (likely(sched_setscheduler(0, SCHED_IDLE, &param) != -1)) {
+		if (opt_debug) {
+			applog(LOG_DEBUG,"set SCHED_IDLE on thread %d",id);
+		}
+		return;
+	}
 #endif
+
 #ifdef SCHED_BATCH
-		sched_setscheduler(0, SCHED_BATCH, &param);
+	if (likely(sched_setscheduler(0, SCHED_BATCH, &param) != -1)) {
+		if (opt_debug) {
+			applog(LOG_DEBUG,"set SCHED_BATCH on thread %d",id);
+		}
+		setpriority(PRIO_PROCESS, 0, 19);
+		return;
+	}
+#endif
+}
+
+static inline void batch_policy(int id)
+{
+	struct sched_param param;
+	param.sched_priority = 0;
+
+#ifdef SCHED_BATCH
+	if (likely(sched_setscheduler(0, SCHED_BATCH, &param) != -1)) {
+		if (opt_debug) {
+			applog(LOG_DEBUG,"set SCHED_BATCH on thread %d",id);
+		}
+		return;
+	}
 #endif
 }
 
@@ -136,9 +165,9 @@ static inline void affine_to_cpu(int id, int cpu)
 }
 #elif defined(__FreeBSD__) /* FreeBSD specific policy and affinity management */
 #include <sys/cpuset.h>
-static inline void drop_policy(void)
-{
-}
+static inline void idle_policy(int id) {}
+
+static inline void batch_policy(int id) {}
 
 static inline void affine_to_cpu(int id, int cpu)
 {
@@ -148,13 +177,11 @@ static inline void affine_to_cpu(int id, int cpu)
 	cpuset_setaffinity(CPU_LEVEL_WHICH, CPU_WHICH_TID, -1, sizeof(cpuset_t), &set);
 }
 #else
-static inline void drop_policy(void)
-{
-}
+static inline void idle_policy(int id) {}
 
-static inline void affine_to_cpu(int id, int cpu)
-{
-}
+static inline void batch_policy(int id) {}
+
+static inline void affine_to_cpu(int id, int cpu) {}
 #endif
 		
 enum workio_commands {
@@ -178,7 +205,6 @@ static const char *algo_names[] = {
         [ALGO_HODL]		= "hodl",
 };
 
-bool opt_debug = false;
 static bool opt_drop_priority = false;
 bool opt_protocol = false;
 static bool opt_benchmark = false;
@@ -1155,8 +1181,9 @@ static void *miner_thread(void *userdata)
 	 * and if that fails, then SCHED_BATCH. No need for this to be an
 	 * error if it fails */
 	if (opt_drop_priority) {
-		setpriority(PRIO_PROCESS, 0, 19);
-		drop_policy();
+		idle_policy(thr_id);
+	} else {
+		batch_policy(thr_id);
 	}
 
 	/* Cpu affinity only makes sense if the number of threads is a multiple
