@@ -177,12 +177,107 @@ static inline void affine_to_cpu(int id, int cpu)
 	CPU_SET(cpu, &set);
 	cpuset_setaffinity(CPU_LEVEL_WHICH, CPU_WHICH_TID, -1, sizeof(cpuset_t), &set);
 }
+#elif defined(__APPLE__) /* Apple OSX specific policy and affinity management */
+#include <sys/time.h>
+#include <sys/resource.h>
+#include <mach/mach_init.h>
+#include <mach/thread_policy.h>
+#include <mach/thread_act.h>
+#include <sched.h>
+#include <pthread.h>
+
+#define SYSCTL_THREAD_COUNT   "machdep.cpu.thread_count"
+
+typedef struct cpu_set {
+  uint32_t    count;
+} cpu_set_t;
+
+static int32_t core_count = 0;
+static pthread_once_t num_cores_once = PTHREAD_ONCE_INIT;
+
+static inline void CPU_ZERO(cpu_set_t *cs) { cs->count = 0; }
+static inline void CPU_SET(int num, cpu_set_t *cs) { cs->count |= (1 << num); }
+static inline int CPU_ISSET(int num, cpu_set_t *cs) { return (cs->count & (1 << num)); }
+
+static inline void core_count_init(void) {
+
+  size_t len = sizeof(core_count);
+  int ret = sysctlbyname(SYSCTL_THREAD_COUNT, &core_count, &len, 0, 0);
+  if (ret) {
+    applog(LOG_ERR,"error while get core count %d", ret);
+    return;
+  }
+
+  if (opt_debug)
+  applog(LOG_DEBUG, "number of cores: %s=%d",SYSCTL_THREAD_COUNT, core_count);
+
+}
+
+int pthread_setaffinity_np(pthread_t thread, size_t cpu_size,
+                           cpu_set_t *cpu_set)
+{
+  thread_port_t mach_thread;
+  int core;
+  kern_return_t ret;
+
+  pthread_once(&num_cores_once,core_count_init);
+
+  for (core = 0; core < core_count; core++) {
+    if (CPU_ISSET(core, cpu_set)) break;
+  }
+
+  // printf("binding to core %d\n", core);
+  thread_affinity_policy_data_t policy = { core };
+  mach_thread = pthread_mach_thread_np(thread);
+  if (KERN_SUCCESS != (ret = thread_policy_set(mach_thread, THREAD_AFFINITY_POLICY,
+                    (thread_policy_t)&policy, 1))) {
+    applog(LOG_ERR,"failed to bind to core %d: %d\n", core, ret);
+    return -1;
+  }
+
+  return 0;
+}
+
+static inline void idle_policy(int id) {
+    if (likely(setpriority(PRIO_PROCESS,0,20) != -1)) {
+        if (opt_debug)
+        applog(LOG_DEBUG,"set priority for thread %d to %d",id,getpriority(PRIO_PROCESS,0));
+    } else {
+        applog(LOG_ERR,"can't set lower priority for thread %d: %d",id, errno);
+    }
+}
+
+static inline void batch_policy(int id) {
+    // reduce priority a little bit
+    if (likely(setpriority(PRIO_PROCESS,0,1) != -1)) {
+        if (opt_debug)
+        applog(LOG_DEBUG,"set priority for thread %d to %d",id,getpriority(PRIO_PROCESS,0));
+    } else {
+        applog(LOG_ERR,"can't set priority for thread %d: %d",id,errno);
+    }
+}
+
+static inline void affine_to_cpu(int id, int cpu) {
+        cpu_set_t cpuset;
+        CPU_ZERO(&cpuset);
+        CPU_SET(cpu,&cpuset);
+
+        pthread_t thread = pthread_self();
+        pthread_setaffinity_np(thread,sizeof(cpu_set_t),&cpuset);
+}
+
 #else
-static inline void idle_policy(int id) {}
+static inline void idle_policy(int id) {
+	// empty
+}
 
-static inline void batch_policy(int id) {}
+static inline void batch_policy(int id) {
+	// empty
+}
 
-static inline void affine_to_cpu(int id, int cpu) {}
+static inline void affine_to_cpu(int id, int cpu) {
+	// empty
+}
 #endif
 		
 enum workio_commands {
