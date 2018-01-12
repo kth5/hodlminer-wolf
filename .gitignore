@@ -1,3 +1,5 @@
+Build.My
+Pull.Master
 
 hodlminer
 hodlminer.exe
@@ -16,7 +18,7 @@ depcomp
 missing
 install-sh
 stamp-h1
-cpuminer-config.h*
+hodlminer-config.h*
 compile
 config.log
 config.status

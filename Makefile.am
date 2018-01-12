@@ -1,4 +1,4 @@
-CC = gcc
+# CC = gcc
 AM_CFLAGS = -Wall
 
 if WANT_JANSSON
