@@ -414,7 +414,7 @@ static char const short_options[] =
 #ifdef HAVE_SYSLOG_H
 	"S"
 #endif
-	"a:c:Dhp:Px:qr:R:s:t:T:o:u:O:V:d";
+	"a:c:Dhp:Px:qr:R:s:t:T:o:u:O:Vd";
 
 static struct option const options[] = {
 	{ "algo", 1, NULL, 'a' },
