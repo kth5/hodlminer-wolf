@@ -1466,9 +1466,19 @@ start:
 			goto out;
 		}
 		if (likely(val)) {
-			bool rc;
-			applog(LOG_INFO, "LONGPOLL pushed new work for block %d, target %04X",
-                                                    g_work.height, g_work.target[7]);
+
+                        bool rc;
+			char s[345];
+                        double hashrate = 0.;
+                        pthread_mutex_lock(&stats_lock);
+                        for (uint_fast16_t i = 0; i < opt_n_threads; i++)
+                            hashrate += thr_hashrates[i];
+                        pthread_mutex_unlock(&stats_lock);
+                        sprintf(s, hashrate >= 1e6 ? "%.0f" : "%.2f", hashrate);
+
+                        applog(LOG_INFO, "LONGPOLL pushed new work for block %d, target %04X, %s hash/s",
+                                    g_work.height, g_work.target[7], s);
+
 			res = json_object_get(val, "result");
 			soval = json_object_get(res, "submitold");
 			submit_old = soval ? json_is_true(soval) : false;
