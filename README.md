@@ -1,4 +1,4 @@
-Hodlminer <img src="https://d25lcipzij17d.cloudfront.net/badge.svg?id=gh&type=6&v=2.4.5&x2=0">
+Hodlminer <img src="https://d25lcipzij17d.cloudfront.net/badge.svg?id=gh&type=6&v=2.4.6&x2=0">
 
 This is a multi-threaded CPU miner for HODL algorithm,
 fork of Jeff Garzik's reference cpuminer.
