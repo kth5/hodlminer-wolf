@@ -21,9 +21,10 @@ Dependencies:
 
 Basic *nix build instructions:
 ```
+        sudo apt-get install libcurl-dev
 	./autogen.sh	# only needed if building from git repo
 	./nomacro.pl	# only needed if building on Mac OS X or with Clang
-	./configure CFLAGS="-O3 -march=native"
+	./configure CFLAGS="-O3 -march=native" --with-curl
 	make
 ```
 	Note: see install instructions for static building in ./install-static-instructions.txt
