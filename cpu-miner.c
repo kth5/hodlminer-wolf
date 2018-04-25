@@ -8,6 +8,10 @@
  * any later version.  See COPYING for more details.
  */
 
+#ifdef __APPLE__
+#include "apple-stuff.h"
+#endif
+
 #include "cpuminer-config.h"
 #define _GNU_SOURCE
 
@@ -36,6 +40,7 @@
 #endif
 #include <jansson.h>
 #include <curl/curl.h>
+
 #include "compat.h"
 #include "miner.h"
 #include "hodl.h"

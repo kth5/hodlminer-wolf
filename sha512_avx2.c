@@ -9,6 +9,10 @@
 
 #include "sha512.h"
 
+#ifdef __APPLE__
+#include "portable-endian.h"
+#endif
+
 //SHA-512 auxiliary functions
 #define Ch(x, y, z) (((x) & (y)) | (~(x) & (z)))
 #define Maj(x, y, z) (((x) & (y)) | ((x) & (z)) | ((y) & (z)))
@@ -18,7 +22,7 @@
 #define SIGMA4(x) (ROR64(x, 19) ^ ROR64(x, 61) ^ SHR64(x, 6))
 
 //Rotate right operation
-#define ROR64(a, n) _mm256_or_si256(_mm256_srli_epi64(a, n), _mm256_slli_epi64(a, sizeof(ulong)*8 - n))
+#define ROR64(a, n) _mm256_or_si256(_mm256_srli_epi64(a, n), _mm256_slli_epi64(a, sizeof(unsigned long)*8 - n))
 
 //Shift right operation
 #define SHR64(a, n) _mm256_srli_epi64(a, n)
