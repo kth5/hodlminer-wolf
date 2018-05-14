@@ -10,7 +10,7 @@
 #include "sha512.h"
 
 #if defined(_WIN64) || defined(__WINDOWS__) || defined(__APPLE__)
-#include "hodl-endian.h"
+#include "portable-endian.h"
 #endif
 
 //SHA-512 auxiliary functions
