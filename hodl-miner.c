@@ -338,6 +338,7 @@ int longpoll_thr_id = -1;
 int stratum_thr_id = -1;
 struct work_restart *work_restart = NULL;
 static struct stratum_ctx stratum;
+bool aes_ni_supported = false;
 
 pthread_mutex_t applog_lock;
 static pthread_mutex_t stats_lock;
@@ -1991,6 +1992,25 @@ static void signal_handler(int sig)
 }
 #endif
 
+#if defined(__i386__) || defined(__x86_64__)
+static inline int cpuid(int code, uint32_t where[4]) {
+	asm volatile("cpuid":"=a"(*where),"=b"(*(where+1)),
+		"=c"(*(where+2)),"=d"(*(where+3)):"a"(code));
+	return (int)where[0];
+}
+#endif
+
+static bool has_aes_ni()
+{
+#if defined(__i386__) || defined(__x86_64__)
+	uint32_t cpu_info[4];
+	cpuid(1, cpu_info);
+	return cpu_info[2] & (1 << 25);
+#else
+	return false;
+#endif
+}
+
 int main(int argc, char *argv[])
 {
 	struct thr_info *thr;
@@ -2030,6 +2050,9 @@ int main(int argc, char *argv[])
 		applog(LOG_ERR, "CURL initialization failed");
 		return 1;
 	}
+
+	aes_ni_supported = has_aes_ni();
+	applog(LOG_INFO, "CPU Supports AES-NI: %s", aes_ni_supported ? "YES" : "NO");
 
 #ifndef WIN32
 	if (opt_background) {

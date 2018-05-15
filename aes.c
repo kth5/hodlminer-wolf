@@ -1,4 +1,5 @@
 #include <stdint.h>
+#if defined(__AES__)
 #include <x86intrin.h>
 #include "wolf-aes.h"
 
