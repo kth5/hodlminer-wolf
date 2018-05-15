@@ -147,4 +147,4 @@ void AES256CBC(__m128i** data, const __m128i** old, const __m128i** next, __m128
         }
     }
 }
-
+#endif
