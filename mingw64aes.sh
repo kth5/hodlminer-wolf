@@ -5,7 +5,7 @@ make clean
 windres res/icon.rc icon.o
 
 export TARGET=x86_64-w64-mingw32
-export CFLAGS="-Ofast -msse4.2 -maes"
+export CFLAGS="${CFLAGS} -msse4.2 -maes"
 export CXXFLAGS="${CFLAGS} -std=gnu++11 -flto -fpermissive"
 export LDFLAGS="-lwsock32"
 ./configure --target=${TARGET} --host=${TARGET} --with-curl --with-crypto

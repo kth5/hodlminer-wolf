@@ -2,6 +2,8 @@
 rm -rf bin
 mkdir -p bin
 
+CFLAGS="-O3"
+
 ./mingw64aes.sh
 ./mingw64avx+aes.sh
 ./mingw64avx2+aes.sh
@@ -16,9 +18,15 @@ for dll in ${BIN_DLLS}; do
 	cp ${BIN_PATH}/${dll} bin/
 done
 
-# same all over again for the dlls
-BIN_DLLS=`strings bin/*.dll  | grep '\.dll'`
-
-for dll in ${BIN_DLLS}; do
-        cp ${BIN_PATH}/${dll} bin/
+# same all over again for the dlls and then some
+# we expect some DDLs not to be available as they
+# will be provided by the system on Windows
+pass=0
+while [ $pass -lt 4 ]; do
+	let pass="${pass} + 1"
+	BIN_DLLS=`strings bin/*.dll  | grep '\.dll'`
+	
+	for dll in ${BIN_DLLS}; do
+	        cp ${BIN_PATH}/${dll} bin/ 2>/dev/null
+	done
 done
