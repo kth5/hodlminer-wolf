@@ -1,9 +1,32 @@
 #!/bin/bash
+rm -rf bin
+mkdir -p bin
+
+CFLAGS="-O3"
+
 ./mingw64aes.sh
 ./mingw64avx+aes.sh
 ./mingw64avx2+aes.sh
 
-mkdir -p bin
-for dll in libcurl-4.dll libnghttp2-14.dll libssh2-1.dll libwinpthread-1.dll zlib1.dll; do
-  cp -v /usr/x86_64-w64-mingw32/bin/${dll} bin/
+# attempt to find our sys-root
+BIN_PATH=`dirname $(find /usr/x86_64-w64-mingw32/ -name zlib1.dll)`
+
+# find out dependencies / some may not exist but that's ok. 
+BIN_DLLS=`strings bin/hodlminer_AES.exe  | grep '\.dll'`
+
+for dll in ${BIN_DLLS}; do
+	cp ${BIN_PATH}/${dll} bin/
+done
+
+# same all over again for the dlls and then some
+# we expect some DDLs not to be available as they
+# will be provided by the system on Windows
+pass=0
+while [ $pass -lt 4 ]; do
+	let pass="${pass} + 1"
+	BIN_DLLS=`strings bin/*.dll  | grep '\.dll'`
+	
+	for dll in ${BIN_DLLS}; do
+	        cp ${BIN_PATH}/${dll} bin/ 2>/dev/null
+	done
 done
