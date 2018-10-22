@@ -1,13 +1,8 @@
-#ifdef __AVX2__
+#include "sha512.h"
 
-//Dependencies
 #include <string.h>
 #include <stdlib.h>
-#include "tmmintrin.h"
-#include "smmintrin.h"
-#include "immintrin.h"
-
-#include "sha512.h"
+#include "endian.h"
 
 #if defined(_WIN64) || defined(__WINDOWS__) || defined(__APPLE__)
 #include "portable-endian.h"
@@ -220,5 +215,3 @@ void sha512ProcessBlock(Sha512Context context[2])
     context[1].h[6] += g[1];
     context[1].h[7] += h[1];
 }
-
-#endif // __AVX2__
