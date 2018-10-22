@@ -88,6 +88,7 @@ int pthread_barrier_wait(pthread_barrier_t *barrier)
 #include <unistd.h>
 #include <sys/time.h>
 #include <time.h>
+#include <mm_malloc.h>
 #ifdef WIN32
 #include <windows.h>
 #else
@@ -351,7 +352,6 @@ static unsigned long accepted_count = 0L;
 static unsigned long rejected_count = 0L;
 static double *thr_hashrates;
 
-//char *scratchpad = NULL;
 CacheEntry *scratchpad = NULL;
 uint32_t nNonce = 0;
 #ifdef HAVE_GETOPT_LONG
@@ -2159,7 +2159,6 @@ int main(int argc, char *argv[])
 	if (opt_algo == ALGO_HODL )
 	{
 		#ifdef __linux__
-		//scratchpad = (CacheEntry *)aligned_alloc(16, 1 << 30);
 		scratchpad = (CacheEntry*)mmap(NULL, 1 << 30, PROT_READ | PROT_WRITE,  (MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB), -1, 0);
 		if (scratchpad == MAP_FAILED) {
 			applog(LOG_INFO, "Could not mmap scratchpad with MAP_HUGETLB. Execute 'echo 512 > /proc/sys/vm/nr_hugepages' to allocate hugepages.");
@@ -2171,7 +2170,7 @@ int main(int argc, char *argv[])
 		}
 
 		#else
-		scratchpad= (CacheEntry *)malloc(1<<30);
+		scratchpad= (CacheEntry *)_mm_malloc(1<<30, 32);
 		#endif
 	}
 
